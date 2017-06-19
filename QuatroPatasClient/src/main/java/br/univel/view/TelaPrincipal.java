@@ -36,7 +36,7 @@ public class TelaPrincipal extends TelaPrincipalBase {
 
 	}
 
-	private static PetDao lookupRemoteStatelessCalculator() throws NamingException {
+	private static PetDao lookupRemoteStateless() throws NamingException {
 		final Hashtable<String, String> jndiProperties = new Hashtable<>();
 
 		jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
@@ -48,7 +48,7 @@ public class TelaPrincipal extends TelaPrincipalBase {
 
 	private void configuraTabela() throws NamingException {
 
-		PetDao dao = lookupRemoteStatelessCalculator();
+		PetDao dao = lookupRemoteStateless();
 		List<Pet> lista = dao.buscarTodos();
 
 		this.modelo = new PetModel(lista);
@@ -73,9 +73,12 @@ public class TelaPrincipal extends TelaPrincipalBase {
 
 	protected void carregarLinha(int idx) {
 		Pet c = this.modelo.getPet(idx);
+		txfId.setText(String.valueOf(c.getId()));
+		txfNome.setText(c.getNome());
+		txfEspecie.setText(c.getEspecie());
+		txfNomeDono.setText(c.getNome_dono());
 		this.PetSelecionado = c;
 		this.labelAlerta.setText(CARREGADO_PARA_ALTERACAO);
-
 		super.btnExcluir.setEnabled(true);
 
 	}
@@ -112,26 +115,29 @@ public class TelaPrincipal extends TelaPrincipalBase {
 	}
 
 	protected void excluir() throws NamingException {
-		PetDao dao = lookupRemoteStatelessCalculator();
+		PetDao dao = lookupRemoteStateless();
+		System.out.println("A");
 		dao.remover(this.PetSelecionado);
+		System.out.println("B");
 		this.modelo.remover(this.PetSelecionado);
+		System.out.println("C");
 		limparCampos();
 	}
 
 	protected void salvar() throws NamingException {
-		PetDao dao = lookupRemoteStatelessCalculator();
+		PetDao dao = lookupRemoteStateless();
 
 		if (PetSelecionado == null) {
 			Pet c = new Pet();
 
-			//String strId = txfId.getText().trim();
+			// String strId = txfId.getText().trim();
 			String strNome = txfNome.getText().trim();
 			String strEspecie = txfEspecie.getText().trim();
 			String strNomeDono = txfNomeDono.getText().trim();
 
-			//Long intId = Long.parseLong(strId);
+			// Long intId = Long.parseLong(strId);
 
-			//c.setId(intId);
+			// c.setId(intId);
 			c.setNome(strNome);
 			c.setEspecie(strEspecie);
 			c.setNome_dono(strNomeDono);
@@ -143,14 +149,14 @@ public class TelaPrincipal extends TelaPrincipalBase {
 
 		} else {
 
-			//String strId = txfId.getText().trim();
+			// String strId = txfId.getText().trim();
 			String strNome = txfNome.getText().trim();
 			String strEspecie = txfEspecie.getText().trim();
 			String strNomeDono = txfNomeDono.getText().trim();
 
-			//Long intId = Long.parseLong(strId);
+			// Long intId = Long.parseLong(strId);
 
-			//this.PetSelecionado.setId(intId);
+			// this.PetSelecionado.setId(intId);
 			this.PetSelecionado.setNome(strNome);
 			this.PetSelecionado.setEspecie(strEspecie);
 			this.PetSelecionado.setNome_dono(strNomeDono);
@@ -170,8 +176,9 @@ public class TelaPrincipal extends TelaPrincipalBase {
 	}
 
 	private void limparCampos() {
+
 		super.labelAlerta.setText("");
-		//super.txfId.setText("");
+		super.txfId.setText("");
 		super.txfNome.setText("");
 		super.txfEspecie.setText("");
 		super.txfNomeDono.setText("");
